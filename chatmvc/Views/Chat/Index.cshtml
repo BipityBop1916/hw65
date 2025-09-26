@@ -1,0 +1,52 @@
+﻿@model List<ChatMessage>
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<ApplicationUser> UserManager
+@{
+    var lastMessageId = Model.LastOrDefault()?.Id ?? 0;
+}
+
+<div id="chatWindow" style="height:500px; overflow-y:auto; border:1px solid #ccc; padding:10px;">
+    <div id="messages">
+        @foreach(var msg in Model)
+        {
+            <partial name="_ChatMessagePartial" model="msg" />
+        }
+    </div>
+</div>
+
+<form id="chatForm">
+        <input type="text" id="messageInput" maxlength="150" style="width:95%;" />
+    <button type="submit" >Send</button>
+</form>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+let lastMessageId = @lastMessageId;
+
+function updateChat() {
+    $.get("/Chat/Update", { lastMessageId: lastMessageId }, function(data){
+        if(data.trim().length > 0){
+            $("#messages").append(data);
+            lastMessageId = $("#messages .chat-message").last().data("id");
+            $("#chatWindow").scrollTop($("#chatWindow")[0].scrollHeight);
+        }
+    });
+}
+
+setInterval(updateChat, 5000);
+
+$("#chatForm").submit(function(e){
+    e.preventDefault();
+    let content = $("#messageInput").val().trim();
+    if(content.length === 0 || content.length > 150) return;
+
+    let token = $('input[name="__RequestVerificationToken"]').val();
+
+    $.post("/Chat/Send", { content: content, __RequestVerificationToken: token }, function(msgHtml){
+        $("#messages").append(msgHtml);
+        lastMessageId = $("#messages .chat-message").last().data("id");
+        $("#messageInput").val("");
+        $("#chatWindow").scrollTop($("#chatWindow")[0].scrollHeight);
+    });
+});
+</script>

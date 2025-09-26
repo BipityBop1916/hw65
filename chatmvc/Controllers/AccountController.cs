@@ -1,7 +1,10 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using chatmvc.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using chatmvc.Models;
+using Microsoft.EntityFrameworkCore;
+
 
 namespace MyChat.Controllers
 {
@@ -10,14 +13,17 @@ namespace MyChat.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IWebHostEnvironment _env;
+        private readonly ApplicationDbContext _context;
 
         public AccountController(UserManager<ApplicationUser> userManager,
                                  SignInManager<ApplicationUser> signInManager,
-                                 IWebHostEnvironment env)
+                                 IWebHostEnvironment env,
+                                 ApplicationDbContext context)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _env = env;
+            _context = context;
         }
 
         // GET: /Account/Register
@@ -200,5 +206,28 @@ namespace MyChat.Controllers
 
             return RedirectToAction(nameof(Profile));
         }
+        
+        [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> UserStats(string id)
+        {
+            if (string.IsNullOrEmpty(id)) return BadRequest();
+
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null) return NotFound();
+
+            var messageCount = await _context.ChatMessages.CountAsync(m => m.UserId == id);
+
+            var vm = new UserStatsViewModel
+            {
+                UserId = user.Id,
+                UserName = user.UserName,
+                AvatarPath = user.AvatarPath,
+                MessageCount = messageCount
+            };
+
+            return View(vm); 
+        }
+
     }
 }

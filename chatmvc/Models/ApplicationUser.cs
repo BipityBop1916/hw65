@@ -7,8 +7,7 @@ public class ApplicationUser : IdentityUser
 { 
     [DataType(DataType.Date)]
     public DateTime DateOfBirth { get; set; }
-    
-    
+    public ICollection<ChatMessage> Messages { get; set; }
     public string? AvatarPath { get; set; }
 }
 

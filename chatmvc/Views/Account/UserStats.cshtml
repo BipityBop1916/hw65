@@ -1,0 +1,19 @@
+﻿@model UserStatsViewModel
+
+@{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
+}
+
+
+
+<h2>@Model.UserName</h2>
+
+<div style="display:flex; align-items:center; margin-bottom:10px;">
+    <img src="@Model.AvatarPath" width="50" style="border-radius:50%; margin-right:10px;" />
+    <div>
+        <strong>Messages sent:</strong> @Model.MessageCount
+    </div>
+</div>
+
+<a href="/Chat">Back to Chat</a>

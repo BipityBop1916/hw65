@@ -1,0 +1,19 @@
+﻿@model ChatMessage
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<ApplicationUser> UserManager
+
+@{
+    var currentUserId = UserManager.GetUserId(User);
+    var isCurrentUser = currentUserId == Model.UserId;
+}
+
+<div class="chat-message" data-id="@Model.Id" style="margin-bottom:5px; display:flex; align-items:center; justify-content:@(isCurrentUser ? "flex-end" : "flex-start")">
+    @if(!isCurrentUser){
+        <img src="@Model.User.AvatarPath" width="30" style="border-radius:50%; margin-right:5px;" />
+    }
+    <div style="max-width:70%;">
+        <a href="/Account/UserStats?id=@Model.UserId">@Model.User.UserName</a>
+        <span style="font-size:0.8em; color:gray;">@Model.SentAt.ToLocalTime().ToString("HH:mm")</span>
+        <div>@Model.Text</div>
+    </div>
+</div>
