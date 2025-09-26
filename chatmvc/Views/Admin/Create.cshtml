@@ -1,0 +1,59 @@
+﻿@model AdminCreateUserViewModel
+@{
+    ViewData["Title"] = "Register";
+}
+<h2>Создать</h2>
+
+<form asp-action="Register" method="post" enctype="multipart/form-data">
+    <div asp-validation-summary="All" class="text-danger"></div>
+
+    <div class="form-group">
+        <label asp-for="UserName"></label>
+        <input asp-for="UserName" class="form-control"/>
+        <span asp-validation-for="UserName" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Email"></label>
+        <input asp-for="Email" class="form-control"/>
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="DateOfBirth"></label>
+        <input asp-for="DateOfBirth" class="form-control" type="date"/>
+        <span asp-validation-for="DateOfBirth" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Avatar"></label>
+        <input asp-for="Avatar" type="file" class="form-control"/>
+    </div>
+
+    <div class="form-group position-relative">
+        <label asp-for="Password"></label>
+        <input asp-for="Password" id="password" class="form-control"/>
+        <button type="button" class="btn btn-sm btn-outline-secondary position-absolute" style="right:5px; top:32px;" onclick="togglePassword('password')">👁</button>
+        <span asp-validation-for="Password" class="text-danger"></span>
+    </div>
+
+    <div class="form-group position-relative">
+        <label asp-for="ConfirmPassword"></label>
+        <input asp-for="ConfirmPassword" id="confirmPassword" class="form-control"/>
+        <button type="button" class="btn btn-sm btn-outline-secondary position-absolute" style="right:5px; top:32px;" onclick="togglePassword('confirmPassword')">👁</button>
+        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Создать</button>
+</form>
+
+@section Scripts{
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        function togglePassword(id){
+            var el = document.getElementById(id);
+            if(!el) return;
+            el.type = (el.type === "password") ? "text" : "password";
+        }
+    </script>
+}

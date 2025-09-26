@@ -1,0 +1,56 @@
+﻿@using Microsoft.AspNetCore.Identity
+@model IEnumerable<ApplicationUser>
+@{
+    ViewData["Title"] = "Admin - Users";
+}
+<h2>Пользователи</h2>
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>Avatar</th>
+        <th>Username</th>
+        <th>Email</th>
+        <th>DOB</th>
+        <th>Roles</th>
+        <th>Locked</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach(var u in Model)
+    {
+        <tr>
+            <td>
+                @if (!string.IsNullOrEmpty(u.AvatarPath))
+                {
+                    <img src="@u.AvatarPath" style="width:50px;height:50px;border-radius:6px;" />
+                }
+            </td>
+            <td>@u.UserName</td>
+            <td>@u.Email</td>
+            <td>@u.DateOfBirth.ToShortDateString()</td>
+            <td>
+                @{
+                    var roles = await Context.RequestServices.GetRequiredService<UserManager<ApplicationUser>>().GetRolesAsync(u);
+                    foreach(var r in roles) { <span class="badge bg-secondary">@r</span> }
+                }
+            </td>
+            <td>@(u.LockoutEnd.HasValue && u.LockoutEnd > DateTimeOffset.UtcNow ? "Yes" : "No")</td>
+            <td>
+                <a asp-controller="Admin" asp-action="Edit" asp-route-id="@u.Id" class="btn btn-sm btn-primary">Edit</a>
+
+                <form asp-controller="Admin" asp-action="Block" asp-route-id="@u.Id" method="post" style="display:inline;">
+                    <button class="btn btn-sm btn-danger">Block</button>
+                </form>
+
+                <form asp-controller="Admin" asp-action="Unblock" asp-route-id="@u.Id" method="post" style="display:inline;">
+                    <button class="btn btn-sm btn-success">Unblock</button>
+                </form>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+<a asp-controller="Admin" asp-action="Create" class="btn btn-primary">Create user</a>
